@@ -91,6 +91,17 @@ public class RunNetworkReaderMultimodalElevation {
 				network.removeLink(l.getId());
 			} 
 		}
+		
+		
+		
+		// ------- Fix lanes: 0.5 -> 1.0 ----------
+
+		for (var link : network.getLinks().values()) {
+			double lanes = link.getNumberOfLanes();
+			if (lanes == 0.5) {
+				link.setNumberOfLanes(1.0);
+			}
+		}
 
 
 
