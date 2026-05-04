@@ -12,6 +12,7 @@ import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Set;
 
 /**
@@ -48,6 +49,12 @@ public class RunNetworkReaderMultimodalElevation {
 		Network network = new OsmBicycleReader.Builder()
 				.setCoordinateTransformation(crsTransformation)
 				.setAfterLinkCreated((link, osmTags, direction) -> {
+					
+					String osmName = osmTags.get("name");
+					if (osmName != null && !osmName.isEmpty()) {
+						link.getAttributes().putAttribute("name", osmName);
+					}
+					
 					String hw = osmTags.get("highway");
 					Set<String> tagListCar = Set.of(
 							"motorway","motorway_link","trunk","trunk_link",
@@ -102,6 +109,22 @@ public class RunNetworkReaderMultimodalElevation {
 				link.setNumberOfLanes(1.0);
 			}
 		}
+		
+		
+		
+		// ------- Keep only selected attributes on links ----------
+
+		Set<String> keepAttrs = Set.of("type", "name", "origid", "surface");
+
+		network.getLinks().values().forEach(link -> {
+			var attrs = link.getAttributes();
+			var keys = new ArrayList<>(attrs.getAsMap().keySet()); // copy to avoid concurrent modification
+			for (String key : keys) {
+				if (!keepAttrs.contains(key)) {
+					attrs.removeAttribute(key);
+				}
+			}
+		});
 
 
 
