@@ -125,6 +125,18 @@ public class RunNetworkReaderMultimodalElevation {
 				}
 			}
 		});
+		
+		
+		
+		// ------- Allow walk on all bike links ----------
+		
+		for (var link : network.getLinks().values()) {
+			var modes = new java.util.HashSet<>(link.getAllowedModes());
+			if (modes.contains(org.matsim.api.core.v01.TransportMode.bike)) {
+				modes.add(org.matsim.api.core.v01.TransportMode.walk);
+				link.setAllowedModes(modes);
+			}
+		}
 
 
 
